@@ -1,0 +1,52 @@
+[*]
+[*] GTKWave Analyzer v3.3.100 (w)1999-2019 BSI
+[*] Wed Nov 29 17:37:29 2023
+[*]
+[dumpfile] "E:\FPGAs\I2C_controller\tb_wave.vcd"
+[dumpfile_mtime] "Wed Nov 29 17:37:04 2023"
+[dumpfile_size] 27861
+[savefile] "E:\FPGAs\I2C_controller\i2c_slave_gtkview.gtkw"
+[timestart] 0
+[size] 1200 1857
+[pos] -1 -1
+*-8.841262 1372 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] tb_top.
+[sst_width] 197
+[signals_width] 327
+[sst_expanded] 1
+[sst_vpaned_height] 596
+@200
+-Global Signals
+@28
+tb_top.clk
+tb_top.rst
+tb_top.SCL
+tb_top.SDA
+@200
+-
+-TB Signals
+@28
+tb_top.enable
+@23
+tb_top.data_received[7:0]
+@200
+-
+-I2C Slave Signals
+@100002028
+^1 E:\FPGAs\I2C_controller\i2c_slave_fsm.alias
+tb_top.slave0.i2c_state[7:0]
+^1 E:\FPGAs\I2C_controller\i2c_slave_fsm.alias
+tb_top.slave0.i2c_next_state[7:0]
+@200
+-
+-I2C Slave SDA Control
+@28
+tb_top.slave0.SDA_control
+@200
+-
+-I2C Slave Data Memory
+@22
+tb_top.slave0.data_memory[63:0]
+tb_top.slave0.data_reg[7:0]
+[pattern_trace] 1
+[pattern_trace] 0
