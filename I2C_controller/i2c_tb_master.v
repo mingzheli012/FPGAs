@@ -3,7 +3,7 @@
 `include "i2c_slave.v"
 `include "i2c_master.v"
 
-module tb_top();
+module master_tb_top();
 
     wire SCL,SDA;
     reg clk,start_tx,rst;
@@ -11,7 +11,7 @@ module tb_top();
     always #10 clk <= ~clk;  // 50MHz Clock --> 20ns
     initial begin
         $dumpfile("tb_wave.vcd");
-        $dumpvars(0, tb_top);
+        $dumpvars(0, master_tb_top);
         clk = 1'b0; rst = 1'b1; start_tx = 1'b0; #10; 
         rst = 1'b0; #13;
         
@@ -20,8 +20,8 @@ module tb_top();
         $finish;
     end
 
-
-    I2C_Master master(  clk,SCL,SDA,7'h11,8'h00,start_tx,rst);
-    I2C_Slave slave0(   clk,SCL,SDA,7'h11,rst);
+    wire[7:0] data_o;
+    i2c_master master(  clk,SCL,SDA,7'h11,8'h00, 8'hAA, start_tx, 1'b0, data_o, rst);
+    i2c_slave slave0(   clk,SCL,SDA,7'h11,rst);
 
 endmodule
