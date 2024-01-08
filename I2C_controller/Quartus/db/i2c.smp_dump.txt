@@ -1,8 +1,0 @@
-
-State Machine - |i2c|i2c_slave:slave0|data_state
-Name data_state.START data_state.ValidData0 data_state.ValidData1 data_state.IDLE data_state.STOP 
-data_state.IDLE 0 0 0 0 0 
-data_state.ValidData1 0 0 1 1 0 
-data_state.ValidData0 0 1 0 1 0 
-data_state.START 1 0 0 1 0 
-data_state.STOP 0 0 0 1 1 
