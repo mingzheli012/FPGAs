@@ -1,0 +1,73 @@
+m255
+K4
+z2
+13
+!s112 1.1
+!i10d 8192
+!i10e 25
+!i10f 100
+cModel Technology
+dE:/
+vi2c_master
+Z0 !s110 1703180642
+!i10b 1
+!s100 ME@1TmefSf9EChFNz<<Wj0
+IYR_57gl2dAbbh]lGmEBUS2
+Z1 VDg1SIo80bB@j0V0VzS_@n1
+Z2 dE:/FPGAs/I2C_controller/I2C_Master
+w1703180636
+8E:/FPGAs/I2C_controller/I2C_Master/i2c_master.v
+FE:/FPGAs/I2C_controller/I2C_Master/i2c_master.v
+L0 14
+Z3 OV;L;10.5b;63
+r1
+!s85 0
+31
+Z4 !s108 1703180642.000000
+!s107 E:/FPGAs/I2C_controller/I2C_Master/i2c_master.v|
+!s90 -reportprogress|300|-work|work|-stats=none|E:/FPGAs/I2C_controller/I2C_Master/i2c_master.v|
+!i113 1
+Z5 o-work work
+Z6 tCvgOpt 0
+vi2c_slave
+R0
+!i10b 1
+!s100 SBW78QV<]XCDdFEj^OmS23
+I30Q]]6_F@gQ`Vg[6zbA_H3
+R1
+R2
+w1703179534
+8E:\FPGAs\I2C_controller\I2C_Slave\i2c_slave.v
+FE:\FPGAs\I2C_controller\I2C_Slave\i2c_slave.v
+L0 17
+R3
+r1
+!s85 0
+31
+R4
+!s107 E:\FPGAs\I2C_controller\I2C_Slave\i2c_slave.v|
+!s90 -reportprogress|300|-work|work|-stats=none|E:\FPGAs\I2C_controller\I2C_Slave\i2c_slave.v|
+!i113 1
+R5
+R6
+vmaster_tb_top
+R0
+!i10b 1
+!s100 >U=;N3fi4KXJTNS>GgmQT0
+I[dmnhgcIXmzLKh=QI9EUe3
+R1
+R2
+w1703180584
+8E:/FPGAs/I2C_controller/I2C_Master/i2c_tb_master.v
+FE:/FPGAs/I2C_controller/I2C_Master/i2c_tb_master.v
+L0 6
+R3
+r1
+!s85 0
+31
+R4
+!s107 E:/FPGAs/I2C_controller/I2C_Master/i2c_tb_master.v|
+!s90 -reportprogress|300|-work|work|-stats=none|E:/FPGAs/I2C_controller/I2C_Master/i2c_tb_master.v|
+!i113 1
+R5
+R6

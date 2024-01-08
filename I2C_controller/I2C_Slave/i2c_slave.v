@@ -32,6 +32,10 @@ module i2c_slave(
     reg[7:0] addr_reg				/* synthesis preserve */;
     wire acquire_data_address		/* synthesis preserve */;
 
+    // I2C Data Register
+    reg[7:0] data_reg;
+    always@(posedge SCL or posedge rst) data_reg <= (rst) ? 8'd0 : {data_reg[6:0],SDA};
+
     // Output Register Loading
     reg[7:0] output_reg;
     always@(posedge i2c_state[ACK4]) output_reg <= data_memory[addr_reg];                               // When in ACK4 stage, load output register accordingly
@@ -74,12 +78,7 @@ module i2c_slave(
     reg start_received, stop_received;
     always@(posedge SCL or posedge start_sign) start_received <= start_sign ? 1'b1: 1'b0;                                               // Use Trigger Latch to hold Start Signal until next rising edge of SCL
     always@(posedge SCL or posedge stop_sign or posedge start_sign) stop_received <= start_sign ? 1'b0 : stop_sign ? 1'b1: 1'b0;        // Use Trigger Latch to hold Stop Signal until next rising edge of SCL or new Start signal.
-    
-
-    // I2C Data Register
-    reg[7:0] data_reg;
-    always@(posedge SCL or posedge rst) data_reg <= (rst) ? 8'd0 : {data_reg[6:0],SDA};
-	
+    	
     // I2C FSM
     always@(negedge (SCL) or posedge rst or posedge stop_received) begin
         if(rst) i2c_state <= 39'd1;
