@@ -1,4 +1,4 @@
-`include "registers.v"
+`include "register_file.v"
 `timescale 1ns/1ps
 
 module register_tb_top();
@@ -26,6 +26,6 @@ module register_tb_top();
     end
 
 
-    MIPS_registers register_file(clk,we,rd_addr0_i,rd_addr1_i,wr_addr0_i,wr_data_i,rd_data0_o,rd_data1_o);
+    register_file register_file(clk,we,rd_addr0_i,rd_addr1_i,wr_addr0_i,wr_data_i,rd_data0_o,rd_data1_o);
 
 endmodule

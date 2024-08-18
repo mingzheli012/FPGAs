@@ -1,4 +1,4 @@
-module MIPS_registers (
+module register_file (
     input clk,
     input we,
     input [4:0] rd_addr0_i,
