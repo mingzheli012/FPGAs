@@ -1,0 +1,118 @@
+    /*
+I2C Slave
+
+Input:
+    SCL:            Serial Clock
+    SDA:            Serial DATA
+    slave_addr:     Slave Address
+    slave_reg_addr: Slave Register Address
+    rst:            Async Reset
+*/
+
+module i2c_slave(
+    input clk,
+    input SCL,
+    inout SDA,
+    input[6:0] slave_addr,
+    input rst                       // Async Active High Reset
+);  
+
+    // I2C State Def
+    reg[7:0] i2c_state, i2c_next_state;
+    parameter INIT=8'd0,ADDR6=8'd1,ADDR5=8'd2,ADDR4=8'd3,ADDR3=8'd4,ADDR2=8'd5,ADDR1=8'd6,ADDR0=8'd7;
+    parameter RW_t=8'd8,ACK1=8'd9,WAIT=8'd10,REG_ADDR7=8'd11,REG_ADDR0=8'd18;
+    parameter ACK2=8'd19,DATA7=8'd20,DATA6=8'd21,DATA0=8'd27,ACK3=8'd28,ACK4=8'd29;
+    parameter DATA_OUT7=8'd30,DATA_OUT6=8'd31,DATA_OUT5=8'd32,DATA_OUT4=8'd33,DATA_OUT3=8'd34,DATA_OUT2=8'd35,DATA_OUT1=8'd36,DATA_OUT0=8'd37,NACK=8'd38;
+
+    // DATA IO Def
+    reg[7:0] data_memory [7:0];
+    reg[7:0] addr_reg;
+    wire acquire_data_address;
+
+    // SDA Output / ACK Handling
+    reg SDA_output,SDA_input;
+    always@(posedge clk) SDA_input <= SDA;
+
+    reg[7:0] output_reg;
+    wire SDA_control;
+    assign SDA_control = ((i2c_state == ACK1)|(i2c_state == ACK2)|(i2c_state == ACK3)|(i2c_state == ACK4)|((i2c_state >= DATA_OUT7) & (i2c_state <= DATA_OUT0))) ? 1'b1:1'b0;
+    assign SDA = (SDA_control) ? SDA_output : 1'bz;
+    always@(posedge clk) output_reg = data_memory[addr_reg];
+    always@(*) begin
+        case(i2c_state)
+            ACK1:       SDA_output = 1'b0;
+            ACK2:       SDA_output = 1'b0;
+            ACK3:       SDA_output = 1'b0;
+            ACK4:       SDA_output = 1'b0;
+            DATA_OUT7:  SDA_output = output_reg[7];
+            DATA_OUT6:  SDA_output = output_reg[6];
+            DATA_OUT5:  SDA_output = output_reg[5];
+            DATA_OUT4:  SDA_output = output_reg[4];
+            DATA_OUT3:  SDA_output = output_reg[3];
+            DATA_OUT2:  SDA_output = output_reg[2];
+            DATA_OUT1:  SDA_output = output_reg[1];
+            DATA_OUT0:  SDA_output = output_reg[0];
+            default:    SDA_output = 1'b1;
+        endcase
+    end
+
+
+    // Generation of START/STOP/Data Valid Signal
+    reg[2:0] data_state,data_next_state;
+    parameter IDLE=3'd0, ValidData1=3'd1, ValidData0=3'd2, START=3'd3, STOP=3'd4;
+    always@(posedge clk or posedge rst) begin
+        if(rst) data_state <= IDLE;
+        else data_state <= (SCL) ? data_next_state : IDLE;
+    end
+    always@(*) begin
+        case(data_state)
+            IDLE:       data_next_state = SDA ? ValidData1 : ValidData0;
+            ValidData1: data_next_state = SDA ? ValidData1 : START;
+            ValidData0: data_next_state = SDA ? STOP : ValidData0;
+            default:    data_next_state = data_next_state;
+        endcase
+    end
+
+    wire start_sign, stop_sign;
+    assign start_sign = (data_state == START) ? 1'b1:1'b0;
+    assign stop_sign = (data_state == STOP) ? 1'b1:1'b0;
+
+    reg start_received, stop_received;
+    always@(*) start_received <= (SCL) ? start_sign : start_received;
+    always@(*) stop_received <= (SCL) ? stop_sign : stop_received;
+
+    // I2C Data Register
+    reg[7:0] data_reg;
+    always@(posedge SCL or posedge rst) data_reg <= (rst) ? 8'd0 : {data_reg[6:0],SDA_input};
+
+    // I2C FSM
+    always@(negedge SCL or posedge rst) begin
+        if(rst) i2c_state <= INIT;
+        else i2c_state <= i2c_next_state;
+    end
+    always@(*) begin
+        case(i2c_state)
+            INIT:       i2c_next_state = start_received ? ADDR6 : INIT;
+            RW_t:       i2c_next_state = (data_reg[6:0] == slave_addr) ? ((SDA_input==1'b0) ? ACK1 : ACK4) : WAIT;
+            WAIT:       i2c_next_state = stop_received ? INIT : WAIT;
+            ACK1:       i2c_next_state = stop_received ? INIT : REG_ADDR7;
+            ACK2:       i2c_next_state = stop_received ? INIT : DATA7;
+            DATA7:      i2c_next_state = (start_received) ? ADDR6 : ((stop_received) ? INIT : DATA6);
+            ACK3:       i2c_next_state = stop_received ? INIT : DATA7;
+            ACK4:       i2c_next_state = stop_received ? INIT : DATA_OUT7;
+            DATA_OUT0:  i2c_next_state = stop_received ? INIT : NACK;
+            NACK:       i2c_next_state = stop_received ? INIT : (data_reg[0]) ? WAIT:DATA_OUT7;
+            default :   i2c_next_state = stop_received ? INIT : i2c_state + 1'd1;
+        endcase
+    end
+
+
+    assign acquire_data_address = (i2c_state == ACK2)|(i2c_state == DATA7)|(i2c_state == NACK) ? 1'b1 : 1'b0;
+    always@(posedge acquire_data_address or posedge ~rst) begin
+        if(rst) addr_reg <= 8'd0;
+        else addr_reg <= (i2c_state == ACK2) ? data_reg : (i2c_state == DATA7)|(i2c_state == NACK) ? addr_reg+7'h1 : addr_reg;
+    end
+
+    always@(*) data_memory[addr_reg] = (i2c_state == DATA0) ? data_reg :data_memory[addr_reg];
+
+endmodule
